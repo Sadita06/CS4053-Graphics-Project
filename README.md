@@ -39,6 +39,25 @@ A 3D WebGL game where the player explores a world and collects treasures.
 - Collision detection
 - Interactive gameplay
 
+## Textures Folder
+This folder contains all image files used as textures in the WebGL scene.
+
+Textures are applied to 3D objects to give them realistic appearance instead of plain colors.
+
+### What goes here
+Image files such as:
+- .jpg
+- .png
+
+## Models Folder
+This folder stores 3D model files that define object geometry.
+
+### What goes here
+Models contain:
+- Vertex positions
+- Normals (for lighting)
+- Texture coordinates (UVs)
+
 ## Team Members
 - Sadita Sadat
 - Kalyani Valath
