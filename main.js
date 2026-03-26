@@ -159,7 +159,7 @@ gl.enable(gl.DEPTH_TEST);
 let angle = 0;
 
 function render() {
-    angle += 0.01;
+    //angle += 0.01;
 
     gl.clearColor(0.5, 0.7, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
