@@ -9,8 +9,6 @@ Responsibilities:
 - Start render loop
 - Call other modules (player, world, lighting, collision)
 */
-import { initWorld, drawWorld } from "./js/world.js";
-
 
 const canvas = document.getElementById("glCanvas");
 const gl = canvas.getContext("webgl");
@@ -64,8 +62,33 @@ gl.attachShader(program, fragmentShader);
 gl.linkProgram(program);
 gl.useProgram(program);
 
-initWorld(gl);
+// =======================
+// GROUND PLANE
+// =======================
 
+const vertices = new Float32Array([
+    -5, 0, -5,   // bottom left
+     5, 0, -5,   // bottom right
+     5, 0,  5,   // top right
+    -5, 0,  5    // top left
+]);
+
+const indices = new Uint16Array([
+    0, 1, 2,
+    0, 2, 3
+]);
+
+// =======================
+// BUFFERS
+// =======================
+
+const vertexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+const indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
 // =======================
 // ATTRIBUTES
@@ -76,7 +99,7 @@ gl.enableVertexAttribArray(aPosition);
 gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
 
 // =======================
-// MATRICES (simple versions)
+// MATRICES
 // =======================
 
 function getProjectionMatrix() {
