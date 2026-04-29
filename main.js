@@ -34,6 +34,8 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 gl.enable(gl.DEPTH_TEST);
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 // =======================
 // PLAYER
@@ -252,6 +254,16 @@ function createGrassTexture(gl) {
 }
 
 const grassTexture = createGrassTexture(gl);
+const coins = [];
+for (let i = 0; i < 5; i++) {
+  coins.push({
+    x: Math.random() * 20 - 10,
+    y: 1.0,
+    z: Math.random() * 20 - 10,
+    rotation: 0,
+    collected: false
+  });
+}
 
 // =======================
 // GEOMETRY
@@ -295,33 +307,22 @@ const playerIndices = new Uint16Array([
   4, 5, 1,  4, 1, 0
 ]);
 
+
+/*
 const coinVertices = new Float32Array([
   -0.5, 0, -0.5,  0, 0,
    0.5, 0, -0.5,  1, 0,
    0.5, 0,  0.5,  1, 1,
   -0.5, 0,  0.5,  0, 1
-])
-
-const coinTexCoords = new Float32Array([
-  0,0,
-  1,0,
-  1,1,
-  0,1
+]);
+*/
+const coinVertices = new Float32Array([
+  -0.5, -0.5, 0,   0, 0,
+   0.5, -0.5, 0,   1, 0,
+   0.5,  0.5, 0,   1, 1,
+  -0.5,  0.5, 0,   0, 1
 ]);
 
-const coinNormals = new Float32Array([
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0
-]);
-
-const coinTangents = new Float32Array([
-  1,0,0,
-  1,0,0,
-  1,0,0,
-  1,0,0
-]);
 
 const coinIndices = new Uint16Array([
   0, 1, 2,
@@ -329,8 +330,8 @@ const coinIndices = new Uint16Array([
 ]);
 
 const coinMesh = createMesh(coinVertices, coinIndices);
-const coinTexture = CreateImageTexture(gl, "Textures/coin.png", gl.CLAMP_TO_EDGE, gl.LINEAR, gl.LINEAR)
-const coinNormal = CreateImageTexture(gl, "Textures/coin_normal.png", gl.CLAMP_TO_EDGE, gl.LINEAR, gl.LINEAR);
+const coinTexture = CreateImageTexture(gl, "Textures/coin-bg.png", gl.CLAMP_TO_EDGE, gl.LINEAR, gl.LINEAR)
+const coinNormal = CreateImageTexture(gl, "Textures/coin-bg_normal.png", gl.CLAMP_TO_EDGE, gl.LINEAR, gl.LINEAR);
 
 function createMesh(vertices, indices) {
   const vertexBuffer = gl.createBuffer();
@@ -403,6 +404,23 @@ function drawPlayer() {
   gl.drawElements(gl.TRIANGLES, playerMesh.indexCount, gl.UNSIGNED_SHORT, 0);
 }
 
+function drawCoin(coin) {
+  bindMesh(coinMesh);
+
+  // move coin
+  const model = getTranslationMatrix(coin.x, coin.y, coin.z);
+  gl.uniformMatrix4fv(uModel, false, model);
+
+  // enable texture
+  gl.uniform1i(uUseTexture, 1);
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, coinTexture);
+  gl.uniform1i(uTexture, 0);
+
+  gl.drawElements(gl.TRIANGLES, coinMesh.indexCount, gl.UNSIGNED_SHORT, 0);
+}
+
 // =======================
 // RENDER LOOP
 // =======================
@@ -428,6 +446,15 @@ function render() {
 
   drawGround();
   drawPlayer();
+  for (let coin of coins) {
+  coin.y = 0.5;
+  coin.rotation += 0.05;
+  }
+  for (let coin of coins) {
+  if (!coin.collected) {
+    drawCoin(coin);
+  }
+}
 
   requestAnimationFrame(render);
 }
